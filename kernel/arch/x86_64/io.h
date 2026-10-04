@@ -10,7 +10,7 @@
 #ifndef INPUT_OUTPUT_PORT_H
 #define INPUT_OUTPUT_PORT_H
 
-#include "lib/default_types.h"
+#include "include/default_types.h"
 
 static inline uint8_t inb(uint16_t port)
 {

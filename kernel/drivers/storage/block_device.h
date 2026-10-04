@@ -10,7 +10,7 @@
 #ifndef BLOCK_DEVICE_H
 #define BLOCK_DEVICE_H
 
-#include "lib/default_types.h"
+#include "include/default_types.h"
 
 typedef struct block_device
 {

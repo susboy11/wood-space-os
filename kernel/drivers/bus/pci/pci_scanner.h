@@ -10,7 +10,7 @@
 #ifndef PCI_SCANNER_H
 #define PCI_SCANNER_H
 
-#include "lib/default_types.h"
+#include "include/default_types.h"
 
 typedef struct
 {
