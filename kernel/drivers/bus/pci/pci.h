@@ -1,7 +1,7 @@
 /*
  * ============================================================================
- * File:		pci_scanner.h
- * Description: 
+ * File:		pci.h
+ * Description: PCI bus controller
  * Created:		2026-09-30
  * Author:		susboy11
  * ============================================================================
@@ -10,7 +10,7 @@
 #ifndef PCI_SCANNER_H
 #define PCI_SCANNER_H
 
-#include "include/default_types.h"
+#include <stdint.h>
 
 typedef struct
 {
@@ -35,18 +35,16 @@ typedef struct
 	uint32_t bar[6];
 } pci_device_t;
 
-void initPCIScanner(void);
 int getPCIDeviceCount(void);
 pci_device_t* getPCIDevice(int index);
-int findPCIDevices(uint8_t class_code, uint8_t subclass, uint8_t prog_if, pci_device_t **result, int max_result);
 void enablePCIBusMastering(pci_device_t *device);
 void enablePCIMemorySpace(pci_device_t *device);
 
 uint8_t readPCIConfigByte(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
 uint16_t readPCIConfigWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
 uint32_t readPCIConfigDWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
-void writePCIConfigDWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint32_t data);
-void writePCIConfigWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint16_t data);
 void writePCIConfigByte(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint8_t data);
+void writePCIConfigWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint16_t data);
+void writePCIConfigDWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint32_t data);
 
 #endif

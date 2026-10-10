@@ -1,14 +1,22 @@
 /*
  * ============================================================================
- * File:		pci_scanner.c
- * Description: 
+ * File:		pci.c
+ * Description: PCI bus controller implementation
  * Created:		2026-09-30
  * Author:		susboy11
  * ============================================================================
 */
 
-#include "drivers/bus/pci/pci_scanner.h"
+#include <stddef.h>
+
+#include "drivers/bus/pci/pci.h"
+
 #include "arch/x86_64/io.h"
+
+#include "include/bus.h"
+#include "include/device.h"
+
+#include "lib/string.h"
 
 #define MAX_PCI_DEVICES			64
 #define MAX_DEPTH_PCI_SCAN		8
@@ -104,11 +112,57 @@ static void scanPCIBus(uint8_t bus, int depth)
 	}
 }
 
-void initPCIScanner(void)
+static int initPCI(bus_t *bus)
 {
 	pci_device_count = 0;
 	
+	(void)bus;
+	
+	return 0;
+}
+
+static int scanPCI(bus_t *bus)
+{
 	scanPCIBus(0, 0);
+	
+	int registered = 0;
+	
+	for (int i = 0; i < pci_device_count; i++)
+	{
+		pci_device_t *pci = &pci_devices[i];
+		device_t *device = allocDevice();
+		
+		if (device == NULL)
+		{
+			break;
+		}
+		
+		int pos = 0;
+		
+		device->name[pos++] = 'p';
+		device->name[pos++] = 'c';
+		device->name[pos++] = 'i';
+		device->name[pos++] = '-';
+		
+		stringWriteDec(device->name, &pos, (uint32_t)pci->access.bus);
+		
+		device->name[pos++] = ':';
+		
+		stringWriteDec(device->name, &pos, (uint32_t)pci->access.slot);
+		
+		device->name[pos++] = '.';
+		
+		stringWriteDec(device->name, &pos, (uint32_t)pci->access.func);
+		
+		device->name[pos] = '\0';
+		device->bus = bus;
+		device->bus_data = pci;
+		
+		registerDevice(device);
+		registered++;
+	}
+	
+	return registered;
 }
 
 int getPCIDeviceCount(void)
@@ -124,29 +178,6 @@ pci_device_t* getPCIDevice(int index)
 	}
 	
 	return &pci_devices[index];
-}
-
-int findPCIDevices(uint8_t class_code, uint8_t subclass, uint8_t prog_if, pci_device_t **result, int max_result)
-{
-	int found = 0;
-	
-	for (int i = 0; i < pci_device_count; i++)
-	{
-		if (found >= max_result)
-		{
-			break;
-		}
-		
-		pci_device_t *device = &pci_devices[i];
-		
-		if ((device->class_code == class_code) && (device->subclass == subclass) && (device->prog_if == prog_if))
-		{
-			result[found] = device;
-			found++;
-		}
-	}
-	
-	return found;
 }
 
 void enablePCIBusMastering(pci_device_t *device)
@@ -190,12 +221,14 @@ uint32_t readPCIConfigDWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t off
 	return inl(CONFIG_DATA);
 }
 
-void writePCIConfigDWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint32_t data)
+void writePCIConfigByte(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint8_t data)
 {
-	uint32_t address = calculatePCIAddress(bus, slot, func, offset);
+	uint32_t old_value = readPCIConfigDWord(bus, slot, func, offset);
+	uint32_t shift = (offset & 3) * 8;
+	uint32_t mask = (0xFF << shift);
+	uint32_t new_value = (old_value & ~mask) | ((uint32_t)data << shift);
 	
-	outl(CONFIG_ADDRESS, address);
-	outl(CONFIG_DATA, data);
+	writePCIConfigDWord(bus, slot, func, offset, new_value);
 }
 
 void writePCIConfigWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint16_t data)
@@ -208,12 +241,19 @@ void writePCIConfigWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset,
 	writePCIConfigDWord(bus, slot, func, offset, new_value);
 }
 
-void writePCIConfigByte(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint8_t data)
+void writePCIConfigDWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint32_t data)
 {
-	uint32_t old_value = readPCIConfigDWord(bus, slot, func, offset);
-	uint32_t shift = (offset & 3) * 8;
-	uint32_t mask = (0xFF << shift);
-	uint32_t new_value = (old_value & ~mask) | ((uint32_t)data << shift);
+	uint32_t address = calculatePCIAddress(bus, slot, func, offset);
 	
-	writePCIConfigDWord(bus, slot, func, offset, new_value);
+	outl(CONFIG_ADDRESS, address);
+	outl(CONFIG_DATA, data);
 }
+
+static bus_t pci_bus =
+{
+	.name = "pci",
+	.init = initPCI,
+	.scan = scanPCI,
+};
+
+BUS_REGISTER(pci_bus);

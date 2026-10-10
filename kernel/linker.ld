@@ -12,13 +12,15 @@ SECTIONS
     . = 0x8000;
 
     /* Код */
-    .text : {
+    .text :
+	{
         *(.text)
         *(.text.*)
     }
 
     /* Only read (consts, strings) */
-    .rodata : {
+    .rodata :
+	{
         *(.rodata)
         *(.rodata.*)
     }
@@ -29,15 +31,25 @@ SECTIONS
         *(.data.*)
     }
 
+	/* buses structures*/
+	.buses : ALIGN(8)
+	{
+		__start_section_buses = .;
+		KEEP(*(.buses))
+		__stop_section_buses = .;
+	}
+
     /* Not init data */
-    .bss : {
+    .bss :
+	{
         *(.bss)
         *(.bss.*)
         *(COMMON)
     }
 
     /* Other */
-    /DISCARD/ : {
+    /DISCARD/ :
+	{
         *(.comment)
         *(.note.*)
         *(.eh_frame*)

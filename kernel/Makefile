@@ -17,7 +17,12 @@ CFLAGS  = -c -ffreestanding -fno-stack-protector -mno-red-zone \
 
 # Source files
 C_SOURCES   = core/kernel.c \
-				drivers/bus/pci/pci_scanner.c \
+				core/bus.c \
+				core/device.c \
+				core/driver.c \
+				lib/string.c \
+				lib/console_print.c \
+				drivers/bus/pci/pci.c \
 				drivers/storage/block_device.c
 
 ASM_SOURCES = arch/x86_64/entry.asm

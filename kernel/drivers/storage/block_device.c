@@ -1,17 +1,19 @@
 /*
  * ============================================================================
  * File:		block_device.c
- * Description: 
+ * Description: Block device controller implementation
  * Created:		2026-09-29
  * Author:		susboy11
  * ============================================================================
 */
 
+#include <stddef.h>
+
 #include "drivers/storage/block_device.h"
 
 #define MAX_BLOCK_DEVICES		16
 
-static block_device_t* block_devices[MAX_BLOCK_DEVICES];
+static block_device_t *block_devices[MAX_BLOCK_DEVICES];
 static int device_count = 0;
 
 int blockDeviceRegister(block_device_t *device)

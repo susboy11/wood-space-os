@@ -1,16 +1,16 @@
 /*
  * ============================================================================
  * File:		io.h
- * Description: 
+ * Description: Read and write functions in the port
  * Created:		2026-09-29
  * Author:		susboy11
  * ============================================================================
 */
 
-#ifndef INPUT_OUTPUT_PORT_H
-#define INPUT_OUTPUT_PORT_H
+#ifndef IO_H
+#define IO_H
 
-#include "include/default_types.h"
+#include <stdint.h>
 
 static inline uint8_t inb(uint16_t port)
 {
