@@ -34,7 +34,7 @@ static uint32_t calculatePCIAddress(uint8_t bus, uint8_t slot, uint8_t func, uin
 
 static int isPCIDeviceExist(uint8_t bus, uint8_t slot, uint8_t func)
 {
-	return readPCIConfigWord(bus, slot, func, 0x00) != 0xFFFF;
+	return readPCIConfigWord(bus, slot, func, PCI_CFG_VENDOR_ID) != 0xFFFF;
 }
 
 static int addPCIDevice(uint8_t bus, uint8_t slot, uint8_t func, pci_device_t *device)
@@ -44,30 +44,74 @@ static int addPCIDevice(uint8_t bus, uint8_t slot, uint8_t func, pci_device_t *d
 		return -1;
 	}
 	
-	device->access.bus = bus;
-	device->access.slot = slot;
-	device->access.func = func;	
-	device->vendor_id = readPCIConfigWord(bus, slot, func, 0x00);
-	device->device_id = readPCIConfigWord(bus, slot, func, 0x02);
-	device->command = readPCIConfigWord(bus, slot, func, 0x04);
-	device->status = readPCIConfigWord(bus, slot, func, 0x06);
-	device->revision_id = readPCIConfigByte(bus, slot, func, 0x08);
-	device->prog_if = readPCIConfigByte(bus, slot, func, 0x09);
-	device->subclass = readPCIConfigByte(bus, slot, func, 0x0A);
-	device->class_code = readPCIConfigByte(bus, slot, func, 0x0B);
-	device->cache_line_size = readPCIConfigByte(bus, slot, func, 0x0C);
-	device->latency_timer = readPCIConfigByte(bus, slot, func, 0x0D);
-	device->header_type = readPCIConfigByte(bus, slot, func, 0x0E);
-	device->bist = readPCIConfigByte(bus, slot, func, 0x0F);
+	device->address.bus = bus;
+	device->address.slot = slot;
+	device->address.func = func;
 	
-	for (int i = 0; i < 6; i++)
+	device->config_header.vendor_id = readPCIConfigWord(bus, slot, func, PCI_CFG_VENDOR_ID);
+	device->config_header.device_id = readPCIConfigWord(bus, slot, func, PCI_CFG_DEVICE_ID);
+	device->config_header.command = readPCIConfigWord(bus, slot, func, PCI_CFG_COMMAND);
+	device->config_header.status = readPCIConfigWord(bus, slot, func, PCI_CFG_STATUS);
+	device->config_header.revision_id = readPCIConfigByte(bus, slot, func, PCI_CFG_REVISION_ID);
+	device->config_header.progif = readPCIConfigByte(bus, slot, func, PCI_CFG_PROG_IF);
+	device->config_header.subclass = readPCIConfigByte(bus, slot, func, PCI_CFG_SUBCLASS);
+	device->config_header.class_code = readPCIConfigByte(bus, slot, func, PCI_CFG_CLASS_CODE);
+	device->config_header.cache_line_size = readPCIConfigByte(bus, slot, func, PCI_CFG_CACHE_LINE_SIZE);
+	device->config_header.latency_timer = readPCIConfigByte(bus, slot, func, PCI_CFG_LATENCY_TIMER);
+	device->config_header.header_type = readPCIConfigByte(bus, slot, func, PCI_CFG_HEADER_TYPE);
+	device->config_header.bist = readPCIConfigByte(bus, slot, func, PCI_CFG_BIST);
+
+	uint8_t header_type = device->config_header.header_type & PCI_HTYPE_HL_MASK;
+
+	if (header_type == 0x00)
 	{
-		device->bar[i] = readPCIConfigDWord(bus, slot, func, 0x10 + (i * 4));
+		for (int i = 0; i < 6; i++)
+		{
+			device->config_header.type0.bar[i] = readPCIConfigDWord(bus, slot, func, PCI_CFG_TYPE0_BAR0 + (i * 4));
+		}
+
+		device->config_header.type0.cardbus_cis = readPCIConfigDWord(bus, slot, func, PCI_CFG_TYPE0_CARDBUS_CIS);
+		device->config_header.type0.subsystem_vendor_id = readPCIConfigWord(bus, slot, func, PCI_CFG_TYPE0_SUBSYSTEM_VENDOR);
+		device->config_header.type0.subsystem_device_id = readPCIConfigWord(bus, slot, func, PCI_CFG_TYPE0_SUBSYSTEM_ID);
+		device->config_header.type0.expansion_rom = readPCIConfigDWord(bus, slot, func, PCI_CFG_TYPE0_EXPANSION_ROM);
+		device->config_header.type0.capabilities = readPCIConfigByte(bus, slot, func, PCI_CFG_TYPE0_CAPABILITIES);
+		device->config_header.type0.interrupt_line = readPCIConfigByte(bus, slot, func, PCI_CFG_TYPE0_INTERRUPT_LINE);
+		device->config_header.type0.interrupt_pin = readPCIConfigByte(bus, slot, func, PCI_CFG_TYPE0_INTERRUPT_PIN);
+		device->config_header.type0.min_grant = readPCIConfigByte(bus, slot, func, PCI_CFG_TYPE0_MIN_GRANT);
+		device->config_header.type0.max_latency = readPCIConfigByte(bus, slot, func, PCI_CFG_TYPE0_MAX_LATENCY);
 	}
-	
+	else if (header_type == 0x01)
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			device->config_header.type1.bar[i] = readPCIConfigDWord(bus, slot, func, PCI_CFG_TYPE1_BAR0 + (i * 4));
+		}
+
+		device->config_header.type1.primary_bus = readPCIConfigByte(bus, slot, func, PCI_CFG_TYPE1_PRIMARY_BUS);
+		device->config_header.type1.secondary_bus = readPCIConfigByte(bus, slot, func, PCI_CFG_TYPE1_SECONDARY_BUS);
+		device->config_header.type1.subordinate_bus = readPCIConfigByte(bus, slot, func, PCI_CFG_TYPE1_SUBORDINATE_BUS);
+		device->config_header.type1.secondary_timer = readPCIConfigByte(bus, slot, func, PCI_CFG_TYPE1_SECONDARY_TIMER);
+		device->config_header.type1.io_base = readPCIConfigByte(bus, slot, func, PCI_CFG_TYPE1_IO_BASE);
+		device->config_header.type1.io_limit = readPCIConfigByte(bus, slot, func, PCI_CFG_TYPE1_IO_LIMIT);
+		device->config_header.type1.secondary_status = readPCIConfigWord(bus, slot, func, PCI_CFG_TYPE1_SECONDARY_STATUS);
+		device->config_header.type1.memory_base = readPCIConfigWord(bus, slot, func, PCI_CFG_TYPE1_MEMORY_BASE);
+		device->config_header.type1.memory_limit = readPCIConfigWord(bus, slot, func, PCI_CFG_TYPE1_MEMORY_LIMIT);
+		device->config_header.type1.prefetch_memory_base = readPCIConfigWord(bus, slot, func, PCI_CFG_TYPE1_PREFETCH_MEMORY_BASE);
+		device->config_header.type1.prefetch_memory_limit = readPCIConfigWord(bus, slot, func, PCI_CFG_TYPE1_PREFETCH_MEMORY_LIMIT);
+		device->config_header.type1.prefetch_memory_base_upper = readPCIConfigDWord(bus, slot, func, PCI_CFG_TYPE1_PREFETCH_MEMORY_BASE_UPPER);
+		device->config_header.type1.prefetch_memory_limit_upper = readPCIConfigDWord(bus, slot, func, PCI_CFG_TYPE1_PREFETCH_MEMORY_LIMIT_UPPER);
+		device->config_header.type1.io_base_upper = readPCIConfigWord(bus, slot, func, PCI_CFG_TYPE1_IO_BASE_UPPER);
+		device->config_header.type1.io_limit_upper = readPCIConfigWord(bus, slot, func, PCI_CFG_TYPE1_IO_LIMIT_UPPER);
+		device->config_header.type1.capabilities = readPCIConfigByte(bus, slot, func, PCI_CFG_TYPE1_CAPABILITIES);
+		device->config_header.type1.expansion_rom = readPCIConfigDWord(bus, slot, func, PCI_CFG_TYPE1_EXPANSION_ROM);
+		device->config_header.type1.interrupt_line = readPCIConfigByte(bus, slot, func, PCI_CFG_TYPE1_INTERRUPT_LINE);
+		device->config_header.type1.interrupt_pin = readPCIConfigByte(bus, slot, func, PCI_CFG_TYPE1_INTERRUPT_PIN);
+		device->config_header.type1.bridge_control = readPCIConfigWord(bus, slot, func, PCI_CFG_TYPE1_BRIDGE_CONTROL);
+	}
+
 	pci_devices[pci_device_count] = *device;
 	pci_device_count++;
-	
+
 	return 0;
 }
 
@@ -85,8 +129,8 @@ static void scanPCIBus(uint8_t bus, int depth)
 			continue;
 		}
 		
-		uint8_t header_type = readPCIConfigByte(bus, slot, 0, 0x0E);
-		uint8_t func_count = (header_type & 0x80) ? 8 : 1;
+		uint8_t header_type = readPCIConfigByte(bus, slot, 0, PCI_CFG_HEADER_TYPE);
+		uint8_t func_count = (header_type & PCI_HTYPE_MFD) ? 8 : 1;
 		
 		for (int func = 0; func < func_count; func++)
 		{
@@ -102,9 +146,9 @@ static void scanPCIBus(uint8_t bus, int depth)
 				return;
 			}
 			
-			if (device.class_code == 0x06 && device.subclass == 0x04)
+			if (device.config_header.class_code == 0x06 && device.config_header.subclass == 0x04)
 			{
-				uint8_t next_bus = readPCIConfigByte(bus, slot, func, 0x19);
+				uint8_t next_bus = readPCIConfigByte(bus, slot, func, PCI_CFG_TYPE1_SECONDARY_BUS);
 				
 				scanPCIBus(next_bus, depth + 1);
 			}
@@ -144,15 +188,15 @@ static int scanPCI(bus_t *bus)
 		device->name[pos++] = 'i';
 		device->name[pos++] = '-';
 		
-		stringWriteDec(device->name, &pos, (uint32_t)pci->access.bus);
+		stringWriteDec(device->name, &pos, (uint32_t)pci->address.bus);
 		
 		device->name[pos++] = ':';
 		
-		stringWriteDec(device->name, &pos, (uint32_t)pci->access.slot);
+		stringWriteDec(device->name, &pos, (uint32_t)pci->address.slot);
 		
 		device->name[pos++] = '.';
 		
-		stringWriteDec(device->name, &pos, (uint32_t)pci->access.func);
+		stringWriteDec(device->name, &pos, (uint32_t)pci->address.func);
 		
 		device->name[pos] = '\0';
 		device->bus = bus;
@@ -182,20 +226,20 @@ pci_device_t* getPCIDevice(int index)
 
 void enablePCIBusMastering(pci_device_t *device)
 {
-	uint16_t command = readPCIConfigWord(device->access.bus, device->access.slot, device->access.func, 0x04);
+	uint16_t command = readPCIConfigWord(device->address.bus, device->address.slot, device->address.func, PCI_CFG_COMMAND);
 	
-	command |= (1 << 2);
+	command |= PCI_CMD_BME;
 	
-	writePCIConfigWord(device->access.bus, device->access.slot, device->access.func, 0x04, command);
+	writePCIConfigWord(device->address.bus, device->address.slot, device->address.func, PCI_CFG_COMMAND, command);
 }
 
 void enablePCIMemorySpace(pci_device_t *device)
 {
-	uint16_t command = readPCIConfigWord(device->access.bus, device->access.slot, device->access.func, 0x04);
+	uint16_t command = readPCIConfigWord(device->address.bus, device->address.slot, device->address.func, PCI_CFG_COMMAND);
 	
-	command |= (1 << 1);
+	command |= PCI_CMD_MSE;
 	
-	writePCIConfigWord(device->access.bus, device->access.slot, device->access.func, 0x04, command);
+	writePCIConfigWord(device->address.bus, device->address.slot, device->address.func, PCI_CFG_COMMAND, command);
 }
 
 uint8_t readPCIConfigByte(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset)

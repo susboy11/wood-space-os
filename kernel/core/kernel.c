@@ -57,6 +57,14 @@ void KernelMain(void)
 	consolePrintDec(getDeviceCount(), COLOR_LIGHT_GREEN);
 	consolePrint("\n", COLOR_WHITE);
 
+	for (int i = 0; i < getDeviceCount(); i++)
+	{
+		device_t *device = getDeviceByIndex(i);
+
+		consolePrint(device->name, COLOR_WHITE);
+		consolePrint("\n", COLOR_WHITE);
+	}
+
 	while (1)
 	{
 		
