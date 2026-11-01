@@ -15,59 +15,59 @@
 // ============================================================================
 // PCI Configuration Space Offsets
 // ============================================================================
-#define PCI_CFG_VENDOR_ID										0x00
-#define PCI_CFG_DEVICE_ID										0x02
-#define PCI_CFG_COMMAND											0x04
-#define PCI_CFG_STATUS											0x06
-#define PCI_CFG_REVISION_ID										0x08
-#define PCI_CFG_PROG_IF											0x09
-#define PCI_CFG_SUBCLASS										0x0A
-#define PCI_CFG_CLASS_CODE										0x0B
-#define PCI_CFG_CACHE_LINE_SIZE									0x0C
-#define PCI_CFG_LATENCY_TIMER									0x0D
-#define PCI_CFG_HEADER_TYPE										0x0E
-#define PCI_CFG_BIST											0x0F
+#define PCI_CFG_VENDOR_ID										0x00		// Vendor ID Offset
+#define PCI_CFG_DEVICE_ID										0x02		// Device ID Offset
+#define PCI_CFG_COMMAND											0x04		// Command Offset
+#define PCI_CFG_STATUS											0x06		// Status Offset
+#define PCI_CFG_REVISION_ID										0x08		// Revision ID Offset
+#define PCI_CFG_PROG_IF											0x09		// Programming Interface Offset
+#define PCI_CFG_SUBCLASS										0x0A		// Subclass Offset
+#define PCI_CFG_CLASS_CODE										0x0B		// Class Code Offset
+#define PCI_CFG_CACHE_LINE_SIZE									0x0C		// Cache Line Size Offset
+#define PCI_CFG_LATENCY_TIMER									0x0D		// Latency Timer Offset
+#define PCI_CFG_HEADER_TYPE										0x0E		// Header Type Offset
+#define PCI_CFG_BIST											0x0F		// BIST Offset
 
 // Type 0 Offsets
-#define PCI_CFG_TYPE0_BAR0										0x10
-#define PCI_CFG_TYPE0_BAR1										0x14
-#define PCI_CFG_TYPE0_BAR2										0x18
-#define PCI_CFG_TYPE0_BAR3										0x1C
-#define PCI_CFG_TYPE0_BAR4										0x20
-#define PCI_CFG_TYPE0_BAR5										0x24
-#define PCI_CFG_TYPE0_CARDBUS_CIS								0x28
-#define PCI_CFG_TYPE0_SUBSYSTEM_VENDOR							0x2C
-#define PCI_CFG_TYPE0_SUBSYSTEM_ID								0x2E
-#define PCI_CFG_TYPE0_EXPANSION_ROM								0x30
-#define PCI_CFG_TYPE0_CAPABILITIES								0x34
-#define PCI_CFG_TYPE0_INTERRUPT_LINE							0x3C
-#define PCI_CFG_TYPE0_INTERRUPT_PIN								0x3D
-#define PCI_CFG_TYPE0_MIN_GRANT									0x3E
-#define PCI_CFG_TYPE0_MAX_LATENCY								0x3F
+#define PCI_CFG_TYPE0_BAR0										0x10		// BAR0 Offset
+#define PCI_CFG_TYPE0_BAR1										0x14		// BAR1 Offset
+#define PCI_CFG_TYPE0_BAR2										0x18		// BAR2 Offset
+#define PCI_CFG_TYPE0_BAR3										0x1C		// BAR3 Offset
+#define PCI_CFG_TYPE0_BAR4										0x20		// BAR4 Offset
+#define PCI_CFG_TYPE0_BAR5										0x24		// BAR5 Offset
+#define PCI_CFG_TYPE0_CARDBUS_CIS								0x28		// Cardbus CIS Offset
+#define PCI_CFG_TYPE0_SUBSYSTEM_VENDOR							0x2C		// Subsystem Vendor Offset
+#define PCI_CFG_TYPE0_SUBSYSTEM_ID								0x2E		// Subsystem ID Offset
+#define PCI_CFG_TYPE0_EXPANSION_ROM								0x30		// Expansion ROM Offset
+#define PCI_CFG_TYPE0_CAPABILITIES								0x34		// Capabilities Offset
+#define PCI_CFG_TYPE0_INTERRUPT_LINE							0x3C		// Interrupt Line Offset
+#define PCI_CFG_TYPE0_INTERRUPT_PIN								0x3D		// Interrupt Pin Offset
+#define PCI_CFG_TYPE0_MIN_GRANT									0x3E		// Min Grant Offset
+#define PCI_CFG_TYPE0_MAX_LATENCY								0x3F		// Max Latency Offset
 
 // Type 1 Offsets
-#define PCI_CFG_TYPE1_BAR0										0x10
-#define PCI_CFG_TYPE1_BAR1										0x14
-#define PCI_CFG_TYPE1_PRIMARY_BUS								0x18
-#define PCI_CFG_TYPE1_SECONDARY_BUS								0x19
-#define PCI_CFG_TYPE1_SUBORDINATE_BUS							0x1A
-#define PCI_CFG_TYPE1_SECONDARY_TIMER							0x1B
-#define PCI_CFG_TYPE1_IO_BASE									0x1C
-#define PCI_CFG_TYPE1_IO_LIMIT									0x1D
-#define PCI_CFG_TYPE1_SECONDARY_STATUS							0x1E
-#define PCI_CFG_TYPE1_MEMORY_BASE								0x20
-#define PCI_CFG_TYPE1_MEMORY_LIMIT								0x22
-#define PCI_CFG_TYPE1_PREFETCH_MEMORY_BASE						0x24
-#define PCI_CFG_TYPE1_PREFETCH_MEMORY_LIMIT						0x26
-#define PCI_CFG_TYPE1_PREFETCH_MEMORY_BASE_UPPER				0x28
-#define PCI_CFG_TYPE1_PREFETCH_MEMORY_LIMIT_UPPER				0x2C
-#define PCI_CFG_TYPE1_IO_BASE_UPPER								0x30
-#define PCI_CFG_TYPE1_IO_LIMIT_UPPER							0x32
-#define PCI_CFG_TYPE1_CAPABILITIES								0x34
-#define PCI_CFG_TYPE1_EXPANSION_ROM								0x38
-#define PCI_CFG_TYPE1_INTERRUPT_LINE							0x3C
-#define PCI_CFG_TYPE1_INTERRUPT_PIN								0x3D
-#define PCI_CFG_TYPE1_BRIDGE_CONTROL							0x3E
+#define PCI_CFG_TYPE1_BAR0										0x10		// BAR0 Offset
+#define PCI_CFG_TYPE1_BAR1										0x14		// BAR1 Offset
+#define PCI_CFG_TYPE1_PRIMARY_BUS								0x18		// Primary Bus Offset
+#define PCI_CFG_TYPE1_SECONDARY_BUS								0x19		// Secondary Bus Offset
+#define PCI_CFG_TYPE1_SUBORDINATE_BUS							0x1A		// Subordinate Bus Offset
+#define PCI_CFG_TYPE1_SECONDARY_TIMER							0x1B		// Secondary Timer Offset
+#define PCI_CFG_TYPE1_IO_BASE									0x1C		// IO Base Offset
+#define PCI_CFG_TYPE1_IO_LIMIT									0x1D		// IO Limit Offset
+#define PCI_CFG_TYPE1_SECONDARY_STATUS							0x1E		// Secondary Status Offset
+#define PCI_CFG_TYPE1_MEMORY_BASE								0x20		// Memory Base Offset
+#define PCI_CFG_TYPE1_MEMORY_LIMIT								0x22		// Memory Limit Offset
+#define PCI_CFG_TYPE1_PREFETCH_MEMORY_BASE						0x24		// Prefetch Memory Base Offset
+#define PCI_CFG_TYPE1_PREFETCH_MEMORY_LIMIT						0x26		// Prefetch Memory Limit Offset
+#define PCI_CFG_TYPE1_PREFETCH_MEMORY_BASE_UPPER				0x28		// Prefetch Memory Base Upper Offset
+#define PCI_CFG_TYPE1_PREFETCH_MEMORY_LIMIT_UPPER				0x2C		// Prefetch Memory Limit Upper Offset
+#define PCI_CFG_TYPE1_IO_BASE_UPPER								0x30		// IO Base Upper Offset
+#define PCI_CFG_TYPE1_IO_LIMIT_UPPER							0x32		// IO Limit Upper Offset
+#define PCI_CFG_TYPE1_CAPABILITIES								0x34		// Capabilities Offset
+#define PCI_CFG_TYPE1_EXPANSION_ROM								0x38		// Expansion ROM Offset
+#define PCI_CFG_TYPE1_INTERRUPT_LINE							0x3C		// Interrupt Line Offset
+#define PCI_CFG_TYPE1_INTERRUPT_PIN								0x3D		// Interrupt Pin Offset
+#define PCI_CFG_TYPE1_BRIDGE_CONTROL							0x3E		// Bridge Control Offset
 
 // ============================================================================
 // Offset 0x00: ID - Identifiers
@@ -223,6 +223,7 @@ typedef struct
 
 int getPCIDeviceCount(void);
 pci_device_t* getPCIDevice(int index);
+
 void enablePCIBusMastering(pci_device_t *device);
 void enablePCIMemorySpace(pci_device_t *device);
 
